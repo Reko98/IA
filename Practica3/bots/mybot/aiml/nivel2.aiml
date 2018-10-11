@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+
+<!-- Agregar nuevo evento -->
+
+<category>
+    <pattern> ^ [agregar+ añadir+ guardar+] ^ evento ^ </pattern>
+    <template>
+        Dime el nombre del evento.
+    </template>
+</category>
+
+
+<category>
+    <pattern> * </pattern>
+    <that>DIME EL NOMBRE DEL EVENTO</that>
+    <template>
+        <think><set name="nombre"><srai> PONERBARRABAJA <star/></srai></set></think>
+        Dime la fecha del evento.
+    </template>
+</category>
+
+
+<category>
+    <pattern> * </pattern>
+    <that>DIME LA FECHA DEL EVENTO</that>
+    <template>
+        <think>
+            <set name="fecha"><star/></set>
+        </think>
+            Dime la hora.
+    </template>
+</category>
+
+
+<category>
+    <pattern>hoy</pattern>
+    <that>DIME LA FECHA DEL EVENTO</that>
+    <template>
+        <think>
+            <set name="fecha"><date jformat="dd/MM/yyyy" /></set>
+        </think>
+            Dime la hora.
+    </template>
+</category>
+
+
+<category>
+    <pattern>maniana</pattern>
+    <that>DIME LA FECHA DEL EVENTO</that>
+    <template>
+        <think>
+            <set name="fecha"><srai>TOMORROW <date jformat="dd" /> <date jformat="MM" /> <date jformat="yyyy" /> </srai></set>
+        </think>
+            Dime la hora.
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ de ^ [de del] ^</pattern>
+    <that>DIME LA FECHA DEL EVENTO</that>
+    <template>
+        <think>
+            <set name="fecha"><star/>/<map name="meses"><star index="2"/></map>/<star index="3"/></set>
+        </think>
+            Dime la hora.
+    </template>
+</category>
+
+
+<category>
+    <pattern> * </pattern>
+    <that>DIME LA HORA</that>
+    <template>
+        <think>
+            <set name="id"><srai> deletrea <star/></srai></set>
+            <set var="contiene"><srai> FINDITEM : IN <get name="id"/></srai></set>
+            <condition var="contiene">
+                <li value="0"></li>
+                <li><set name="id"><srai> REMOVEITEM 3 IN <get name="id"/></srai></set></li>
+            </condition>
+            <set var="hora"><srai> selectitem 1 in <get name="id"/></srai><srai> selectitem 2 in <get name="id"/></srai></set>
+            <set var="min"><srai> selectitem 3 in <get name="id"/></srai></set>
+            <set name="id"><srai> QUITARESPACIOS <get name="id"/></srai></set>
+            <set name="id"><srai> ADDITEM <get name="fecha"/> IN <get name="id"/></srai></set>
+            <set name="id"><srai> PONERBARRABAJA <get name="id"/></srai></set>
+            <set var="claves"> 0 <readkeys>evper</readkeys></set>
+            <set var="contiene"><srai> FINDITEM <get name="id"/> IN <get var="claves"/> </srai></set>
+        </think>
+            <condition var="contiene">
+                <li value="0">
+                    <think>
+                    <set var="hora"><map name="por2"><get var="hora"/></map></set>
+                    <set var="compara"><srai> compare 3 with <get var="min"/></srai></set>
+                    <condition var="compara">
+                        <li value="YES">
+                            <set var="hora"><map name="successor"><get var="hora"/></map></set>
+                        </li>
+                        <li></li>
+                    </condition>
+                    <set var="claves"> 0 <readkeys>evento</readkeys></set>
+                    <set var="contiene"><srai> FINDITEM <get name="fecha"/> IN <get var="claves"/></srai></set>
+                    <condition var="contiene">
+                        <li value="0">
+                            <set var="listaeventos">0 null null null null null null null null null null null null null null null null null null null null null null
+                                null null null null null null null null null null null null null null null null null null null null null null null null null </set>
+                            <set var="listaeventos"><srai> removeitem <map name="successor"><get var="hora"/></map> in <get var="listaeventos"/></srai></set>
+                            <set var="listaeventos"><srai> insertitem <get name="nombre"/> pos <get var="hora"/> in <get var="listaeventos"/></srai></set>
+                            <addtomap><name>evento</name><key><get name="fecha"/></key>
+                            <value><get var="listaeventos"/></value></addtomap>
+                        </li>
+                        <li>
+                            <set var="listaeventos"><map name="evento"><get name="fecha"/></map></set>
+                            <set var="listaeventos"><srai> removeitem <map name="successor"><get var="hora"/></map> in <get var="listaeventos"/></srai></set>
+                            <set var="listaeventos"><srai> insertitem <get name="nombre"/> pos <get var="hora"/> in <get var="listaeventos"/></srai></set>
+                            <modifymap><name>evento</name><key><get name="fecha"/></key>
+                            <value><get var="listaeventos"/></value></modifymap>
+                        </li>
+                    </condition>
+                    <addtomap><name>evper</name><key><get name="id"/></key>
+                    <value>0 </value></addtomap>
+                </think>
+                    Quieres asociarlo con un contacto?
+                </li>
+                <li> Ya tienes una actividad ese día a esa hora. </li>
+            </condition>
+    </template>
+</category>
+
+
+<category>
+    <pattern>no</pattern>
+    <that>QUIERES ASOCIARLO CON UN CONTACTO</that>
+    <template>
+        Ok. Evento guardado correctamente.
+    </template>
+</category>
+
+
+<category>
+    <pattern>si</pattern>
+    <that>QUIERES ASOCIARLO CON UN CONTACTO</that>
+    <template>
+        Dime el nombre del contacto que quieres asociar.
+    </template>
+</category>
+
+
+<category>
+    <pattern>*</pattern>
+    <that>DIME EL NOMBRE DEL CONTACTO QUE QUIERES ASOCIAR</that>
+    <template>
+        <think>
+            <set var="apellido"><srai> PONERBARRABAJA <star/></srai></set>
+            <set var="listaapellidos"><map name="evper"><get name="id"/></map></set>
+            <set var="listaapellidos"><get var="listaapellidos"/> <get var="apellido"/></set>
+            <modifymap><name>evper</name><key><get name="id"/></key>
+            <value><get var="listaapellidos"/></value></modifymap>
+        </think>
+        Quieres asociarlo a otro contacto?
+    </template>
+</category>
+
+
+<category>
+    <pattern>si</pattern>
+    <that>QUIERES ASOCIARLO A OTRO CONTACTO</that>
+    <template>
+        Dime el nombre del contacto que quieres asociar.
+    </template>
+</category>
+
+
+<category>
+    <pattern>no</pattern>
+    <that>QUIERES ASOCIARLO A OTRO CONTACTO</that>
+    <template>
+        Ok. Evento guardado correctamente.
+    </template>
+</category>
+
+
+<!-- Modificar evento -->
+
+<category>
+    <pattern> ^ [modific+ edit+] ^ evento ^ </pattern>
+    <template>
+        Dime la fecha del evento que quieres modificar.
+    </template>
+</category>
+
+
+<category>
+    <pattern> * </pattern>
+    <that>DIME LA FECHA DEL EVENTO QUE QUIERES MODIFICAR</that>
+    <template>
+        <think>
+            <set name="fecha"><star/></set>
+        </think>
+            Dime la hora de inicio.
+    </template>
+</category>
+
+
+<category>
+    <pattern>hoy</pattern>
+    <that>DIME LA FECHA DEL EVENTO QUE QUIERES MODIFICAR</that>
+    <template>
+        <think>
+            <set name="fecha"><date jformat="dd/MM/yyyy" /></set>
+        </think>
+            Dime la hora de inicio.
+    </template>
+</category>
+
+
+<category>
+    <pattern>maniana</pattern>
+    <that>DIME LA FECHA DEL EVENTO QUE QUIERES MODIFICAR</that>
+    <template>
+        <think>
+            <set name="fecha"><srai>TOMORROW <date jformat="dd" /> <date jformat="MM" /> <date jformat="yyyy" /> </srai></set>
+        </think>
+            Dime la hora de inicio.
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ de ^ [de del] ^</pattern>
+    <that>DIME LA FECHA DEL EVENTO QUE QUIERES MODIFICAR</that>
+    <template>
+        <think>
+            <set name="fecha"><star/>/<map name="meses"><star index="2"/></map>/<star index="3"/></set>
+        </think>
+            Dime la hora de inicio.
+    </template>
+</category>
+
+
+<category>
+    <pattern> * </pattern>
+    <that>DIME LA HORA DE INICIO</that>
+    <template>
+        <think>
+            <set name="id"><srai> deletrea <star/></srai></set>
+            <set var="contiene"><srai> FINDITEM : IN <get name="id"/></srai></set>
+            <condition var="contiene">
+                <li value="0"></li>
+                <li><set name="id"><srai> REMOVEITEM 3 IN <get name="id"/></srai></set></li>
+            </condition>
+            <set name="id"><srai> QUITARESPACIOS <get name="id"/></srai></set>
+            <set name="id"><srai> ADDITEM <get name="fecha"/> IN <get name="id"/></srai></set>
+            <set name="id"><srai> PONERBARRABAJA <get name="id"/></srai></set>
+            <set var="claves"> 0 <readkeys>evper</readkeys></set>
+            <set var="contiene"><srai> FINDITEM <get name="id"/> IN <get var="claves"/></srai></set>
+        </think>
+            <condition var="contiene">
+                <li value="0">
+                    No hay registrado ningún evento ese día a esa hora.
+                </li>
+                <li>Que quieres modificar?</li>
+            </condition>
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ titulo ^</pattern>
+    <that>QUE QUIERES MODIFICAR</that>
+    <template>
+        Dime el nuevo titulo.
+    </template>
+</category>
+
+
+<category>
+    <pattern>*</pattern>
+    <that>DIME EL NUEVO TITULO</that>
+    <template>
+        <think>
+            <set name="id"><srai> deletrea <get name="id"/></srai></set>
+            <set var="hora"><srai> selectitem 12 in <get name="id"/></srai><srai> selectitem 13 in <get name="id"/></srai></set>
+            <set var="min"><srai> selectitem 14 in <get name="id"/></srai></set>
+            <set name="id"><srai> QUITARESPACIOS <get name="id"/></srai></set>
+            <set var="hora"><map name="por2"><get var="hora"/></map></set>
+            <set var="compara"><srai> compare 3 with <get var="min"/></srai></set>
+            <condition var="compara">
+                <li value="YES">
+                    <set var="hora"><map name="successor"><get var="hora"/></map></set>
+                </li>
+                <li></li>
+            </condition>
+            <set var="listaeventos"><map name="evento"><get name="fecha"/></map></set>
+            <set var="listaeventos"><srai> removeitem <map name="successor"><get var="hora"/></map> in <get var="listaeventos"/></srai></set>
+            <set var="listaeventos"><srai> insertitem <srai> PONERBARRABAJA <star/></srai> pos <get var="hora"/> in <get var="listaeventos"/></srai></set>
+            <modifymap><name>evento</name><key><get name="fecha"/></key>
+            <value><get var="listaeventos"/></value></modifymap>
+        </think>
+        Ok. Nombre del evento modificado.
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ fecha ^</pattern>
+    <that>QUE QUIERES MODIFICAR</that>
+    <template>
+        Dime la nueva fecha.
+    </template>
+</category>
+
+
+<category>
+    <pattern>*</pattern>
+    <that>DIME LA NUEVA FECHA</that>
+    <template>
+        <think>
+            <set var="listaapellidos"><map name="evper"><get name="id"/></map></set>
+            <removefrommap><name>evper</name><key><get name="id"/></key></removefrommap>
+            <set name="id"><srai> QUITARESPACIOS <get name="id"/></srai></set>
+            <set name="id"><srai> remain <get name="id"/></srai></set>
+            <set name="id"><srai> ADDITEM <star/> IN <get name="id"/></srai></set>
+            <set name="id"><srai> PONERBARRABAJA <get name="id"/></srai></set>
+            <addtomap><name>evper</name><key><get name="id"/></key>
+            <value><get var="listaapellidos"/></value></addtomap>
+            <set var="listaeventos"><map name="evento"><get name="fecha"/></map></set>
+            <removefrommap><name>evento</name><key><get name="fecha"/></key></removefrommap>
+            <addtomap><name>evento</name><key><star/></key>
+            <value><get var="listaeventos"/></value></addtomap>
+        </think>
+        Ok. Evento modificado correctamente.
+    </template>
+</category>
+
+
+<category>
+    <pattern>hoy</pattern>
+    <that>DIME LA NUEVA FECHA</that>
+    <template>
+        <think>
+            <srai><date jformat="dd/MM/yyyy" /></srai>
+        </think>
+        Ok. Evento modificado correctamente.
+    </template>
+</category>
+
+
+<category>
+    <pattern>maniana</pattern>
+    <that>DIME LA NUEVA FECHA</that>
+    <template>
+        <think>
+            <srai><srai>TOMORROW <date jformat="dd" /> <date jformat="MM" /> <date jformat="yyyy" /> </srai></srai>
+        </think>
+        Ok. Evento modificado correctamente.
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ hora ^</pattern>
+    <that>QUE QUIERES MODIFICAR</that>
+    <template>
+        Dime la nueva hora.
+    </template>
+</category>
+
+
+<category>
+    <pattern>*</pattern>
+    <that>DIME LA NUEVA HORA</that>
+    <template>
+        <think>
+            <set name="id"><srai> deletrea <get name="id"/></srai></set>
+            <set var="hora"><srai> selectitem 12 in <get name="id"/></srai><srai> selectitem 13 in <get name="id"/></srai></set>
+            <set var="min"><srai> selectitem 14 in <get name="id"/></srai></set>
+            <set name="id"><srai> QUITARESPACIOS <get name="id"/></srai></set>
+            <set name="id"><srai> PONERBARRABAJA <get name="id"/></srai></set>
+            <set var="hora"><map name="por2"><get var="hora"/></map></set>
+            <set var="compara"><srai> compare 3 with <get var="min"/></srai></set>
+            <condition var="compara">
+                <li value="YES">
+                    <set var="hora"><map name="successor"><get var="hora"/></map></set>
+                </li>
+                <li></li>
+            </condition>
+            <set var="listaeventos"><map name="evento"><get name="fecha"/></map></set>
+            <set var="listaapellidos"><map name="evper"><get name="id"/></map></set>
+            <set var="nuevonombre"><srai> selectitem <map name="successor"><get var="hora"/></map> in <get var="listaeventos"/></srai></set>
+            <set var="listaeventos"><srai> removeitem <map name="successor"><get var="hora"/></map> in <get var="listaeventos"/></srai></set>
+            <set var="listaeventos"><srai> insertitem null pos <get var="hora"/> in <get var="listaeventos"/></srai></set>
+            <set var="nuevahora"><srai> deletrea <star/></srai></set>
+            <set var="hora"><srai> selectitem 1 in <get var="nuevahora"/></srai><srai> selectitem 2 in <get var="nuevahora"/></srai></set>
+            <set var="min"><srai> selectitem 4 in <get var="nuevahora"/></srai></set>
+            <set var="nuevahora"><srai> QUITARESPACIOS <get var="nuevahora"/></srai></set>
+            <set var="hora"><map name="por2"><get var="hora"/></map></set>
+            <set var="compara"><srai> compare 3 with <get var="min"/></srai></set>
+            <condition var="compara">
+                <li value="YES">
+                    <set var="hora"><map name="successor"><get var="hora"/></map></set>
+                </li>
+                <li></li>
+            </condition>
+            <set var="listaeventos"><srai> removeitem <map name="successor"><get var="hora"/></map> in <get var="listaeventos"/></srai></set>
+            <set var="listaeventos"><srai> insertitem <get var="nuevonombre"/> pos <get var="hora"/> in <get var="listaeventos"/></srai></set>
+            <modifymap><name>evento</name><key><get name="fecha"/></key>
+            <value><get var="listaeventos"/></value></modifymap>
+            <removefrommap><name>evper</name><key><get name="id"/></key></removefrommap>
+            <set name="id"><srai> deletrea <star/></srai></set>
+            <set var="contiene"><srai> FINDITEM : IN <get name="id"/></srai></set>
+            <condition var="contiene">
+                <li value="0"></li>
+                <li><set name="id"><srai> REMOVEITEM 3 IN <get name="id"/></srai></set></li>
+            </condition>
+            <set name="id"><srai> QUITARESPACIOS <get name="id"/></srai></set>
+            <set name="id"><srai> ADDITEM <get name="fecha"/> IN <get name="id"/></srai></set>
+            <set name="id"><srai> PONERBARRABAJA <get name="id"/></srai></set>
+            <addtomap><name>evper</name><key><get name="id"/></key>
+            <value><get var="listaapellidos"/></value></addtomap>
+        </think>
+        Ok. Evento modificado.
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ contacto+ ^</pattern>
+    <that>QUE QUIERES MODIFICAR</that>
+    <template>
+        Asociar un nuevo contacto o eliminar?
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ asociar ^</pattern>
+    <that>ASOCIAR UN NUEVO CONTACTO O ELIMINAR</that>
+    <template>
+        Dime el nombre del contacto que quieres asociar.
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ [eliminar borrar] ^</pattern>
+    <that>ASOCIAR UN NUEVO CONTACTO O ELIMINAR</that>
+    <template>
+        Dime el nombre del contacto que quieres borrar del evento.
+    </template>
+</category>
+
+
+<category>
+    <pattern>*</pattern>
+    <that>DIME EL NOMBRE DEL CONTACTO QUE QUIERES BORRAR DEL EVENTO</that>
+    <template>
+        <think>
+            <set var="contacto"><srai> PONERBARRABAJA <star/></srai></set>
+            <set var="listaapellidos"><map name="evper"><get name="id"/></map></set>
+            <set var="listaapellidos"><srai> removeitem <srai> finditem <get var="contacto"/>
+            in <get var="listaapellidos"/></srai> in  <get var="listaapellidos"/></srai></set>
+            <modifymap><name>evper</name><key><get name="id"/></key>
+            <value><get var="listaapellidos"/></value></modifymap>
+        </think>
+        Quieres borrar otro contacto del evento?
+    </template>
+</category>
+
+
+<category>
+    <pattern>si</pattern>
+    <that>QUIERES BORRAR OTRO CONTACTO DEL EVENTO</that>
+    <template>
+        Dime el nombre del contacto que quieres borrar del evento.
+    </template>
+</category>
+
+
+<category>
+    <pattern>no</pattern>
+    <that>QUIERES BORRAR OTRO CONTACTO DEL EVENTO</that>
+    <template>
+        Ok, operación finalizada.
+    </template>
+</category>
+
+
+<!-- Borrar evento -->
+
+<category>
+    <pattern> ^ [borrar+ eliminar+] ^ evento ^ </pattern>
+    <template>
+        Dime la fecha del evento que quieres eliminar.
+    </template>
+</category>
+
+
+<category>
+    <pattern> * </pattern>
+    <that>DIME LA FECHA DEL EVENTO QUE QUIERES ELIMINAR</that>
+    <template>
+        <think>
+            <set name="fecha"><star/></set>
+        </think>
+            Dime la hora de inicio del evento.
+    </template>
+</category>
+
+
+<category>
+    <pattern>hoy</pattern>
+    <that>DIME LA FECHA DEL EVENTO QUE QUIERES ELIMINAR</that>
+    <template>
+        <think>
+            <set name="fecha"><date jformat="dd/MM/yyyy" /></set>
+        </think>
+            Dime la hora de inicio del evento.
+    </template>
+</category>
+
+
+<category>
+    <pattern>maniana</pattern>
+    <that>DIME LA FECHA DEL EVENTO QUE QUIERES ELIMINAR</that>
+    <template>
+        <think>
+            <set name="fecha"><srai>TOMORROW <date jformat="dd" /> <date jformat="MM" /> <date jformat="yyyy" /> </srai></set>
+        </think>
+            Dime la hora de inicio del evento.
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ de ^ [de del] ^</pattern>
+    <that>DIME LA FECHA DEL EVENTO QUE QUIERES ELIMINAR</that>
+    <template>
+        <think>
+            <set name="fecha"><star/>/<map name="meses"><star index="2"/></map>/<star index="3"/></set>
+        </think>
+            Dime la hora de inicio del evento.
+    </template>
+</category>
+
+
+<category>
+    <pattern> * </pattern>
+    <that>DIME LA HORA DE INICIO DEL EVENTO</that>
+    <template>
+        <think>
+            <set name="id"><srai> deletrea <star/></srai></set>
+            <set var="contiene"><srai> FINDITEM : IN <get name="id"/></srai></set>
+            <condition var="contiene">
+                <li value="0"></li>
+                <li><set name="id"><srai> REMOVEITEM 3 IN <get name="id"/></srai></set></li>
+            </condition>
+            <set name="id"><srai> QUITARESPACIOS <get name="id"/></srai></set>
+            <set name="id"><srai> ADDITEM <get name="fecha"/> IN <get name="id"/></srai></set>
+            <set name="id"><srai> PONERBARRABAJA <get name="id"/></srai></set>
+            <set var="claves"> 0 <readkeys>evper</readkeys></set>
+            <set var="contiene"><srai> FINDITEM <get name="id"/> IN <get var="claves"/></srai></set>
+        </think>
+            <condition var="contiene">
+                <li value="0">
+                    No hay registrado ningún evento ese día a esa hora.
+                </li>
+                <li>Estas seguro de que quieres borrar este evento?</li>
+            </condition>
+    </template>
+</category>
+
+
+<category>
+    <pattern>si</pattern>
+    <that>ESTAS SEGURO DE QUE QUIERES BORRAR ESTE EVENTO</that>
+    <template>
+        <think>
+            <removefrommap><name>evper</name><key><get name="id"/></key></removefrommap>
+            <set name="id"><srai> deletrea <get name="id"/></srai></set>
+            <set var="hora"><srai> selectitem 12 in <get name="id"/></srai><srai> selectitem 13 in <get name="id"/></srai></set>
+            <set var="min"><srai> selectitem 14 in <get name="id"/></srai></set>
+            <set var="hora"><map name="por2"><get var="hora"/></map></set>
+            <set var="compara"><srai> compare 3 with <get var="min"/></srai></set>
+            <condition var="compara">
+                <li value="YES">
+                    <set var="hora"><map name="successor"><get var="hora"/></map></set>
+                </li>
+                <li></li>
+            </condition>
+            <set var="listaeventos"><map name="evento"><get name="fecha"/></map></set>
+            <set var="listaeventos"><srai> removeitem <map name="successor"><get var="hora"/></map> in <get var="listaeventos"/></srai></set>
+            <set var="listaeventos"><srai> insertitem null pos <get var="hora"/> in <get var="listaeventos"/></srai></set>
+            <modifymap><name>evento</name><key><get name="fecha"/></key>
+            <value><get var="listaeventos"/></value></modifymap>
+        </think>
+        Evento eliminado.
+    </template>
+</category>
+
+
+<category>
+    <pattern>no</pattern>
+    <that>ESTAS SEGURO DE QUE QUIERES BORRAR ESTE EVENTO</that>
+    <template>
+            Entendido.
+    </template>
+</category>
+
+
+<!-- Listar eventos dada una fecha y contar eventos -->
+
+<category>
+    <pattern> ^ evento+ ^ tengo el dia * </pattern>
+    <template>
+        <think>
+            <set var="listaeventos"><map name="evento"><star index="3"/></map></set>
+            <set var="item"><srai> ITERATE <get var="listaeventos"/></srai></set>
+            <set name="salida"> </set>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <condition var="item">
+                        <li value="0"></li>
+                        <li value="null"></li>
+                        <li value="unknown"></li>
+                        <li>
+                            <set name="salida"><get name="salida"/> <srai> QUITARESPACIOS <get var="item"/>, </srai></set>
+                        </li>
+                    </condition>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <loop/>
+                </li>
+            </condition>
+            <set var="cont"><srai> COUNT <get name="salida"/></srai></set>
+            <condition var="cont">
+                <li value="0"><set name="salida">No tienes eventos.</set> </li>
+                <li></li>
+            </condition>
+        </think>
+        <get name="salida"/>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ evento+ ^ tengo hoy </pattern>
+    <template>
+        <think>
+            <srai>evento tengo el dia <date jformat="dd/MM/yyyy" /></srai>
+        </think>
+        <get name="salida"/>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ evento+ ^ tengo maniana </pattern>
+    <template>
+        <think>
+            <srai>evento tengo el dia <srai>TOMORROW <date jformat="dd" /> <date jformat="MM" /> <date jformat="yyyy" /> </srai></srai>
+        </think>
+        <get name="salida"/>
+    </template>
+</category>
+
+</aiml>

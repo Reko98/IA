@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+
+<!-- Consulta de si tengo el reso del día sin eventos -->
+
+<category>
+    <pattern>^ tengo el dia libre ^</pattern>
+    <template>
+        <think>
+            <set var="listaeventos"><map name="evento"><date jformat="dd/MM/yyyy" /></map></set>
+            <set var="contador">1</set>
+            <set var="salida">1</set>
+            <condition var="contador">
+                <li><value><map name="por2"><date jformat="HH" /></map></value></li>
+                <li>
+                    <set var="contador"><map name="successor"><get var="contador"/></map>
+                    </set>
+                    <set var="listaeventos"><srai> remain <get var="listaeventos"/></srai></set>
+                    <loop/>
+                </li>
+            </condition>
+            <set var="item"><srai> ITERATE <get var="listaeventos"/></srai></set>
+            <set name="salida"> </set>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <condition var="item">
+                        <li value="0"></li>
+                        <li value="null"></li>
+                        <li value="unknown"></li>
+                        <li>
+                            <set name="salida"><get name="salida"/> <srai> QUITARESPACIOS <get var="item"/>, </srai></set>
+                        </li>
+                    </condition>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <loop/>
+                </li>
+            </condition>
+            <set var="cont"><srai> COUNT <get name="salida"/></srai></set>
+        </think>
+        <condition var="cont">
+            <li value="0">Si</li>
+            <li>No</li>
+        </condition>
+    </template>
+</category>
+
+
+<!-- Consulta último evento -->
+
+
+<category>
+    <pattern>^ ultimo evento ^ del *</pattern>
+    <template>
+        <think>
+            <set var="listaeventos"><map name="evento"><star index="3"/></map></set>
+            <set var="item"><srai> ITERATE <get var="listaeventos"/></srai></set>
+            <set name="salida"> </set>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <condition var="item">
+                        <li value="0"></li>
+                        <li value="null"></li>
+                        <li value="unknown"></li>
+                        <li>
+                            <set name="salida"><srai> QUITARESPACIOS <get var="item"/></srai></set>
+                        </li>
+                    </condition>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <loop/>
+                </li>
+            </condition>
+        </think>
+        El ultimo evento es: <get name="salida"/>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ ultimo evento ^ de maniana </pattern>
+    <template>
+        <think>
+            <srai>ultimo evento del <srai>TOMORROW <date jformat="dd" /> <date jformat="MM" /> <date jformat="yyyy" /> </srai></srai>
+        </think>
+        El ultimo evento es: <get name="salida"/>
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ ultimo evento ^ de hoy</pattern>
+    <template>
+        <think>
+            <set var="listaeventos"><map name="evento"><date jformat="dd/MM/yyyy" /></map></set>
+            <set var="contador">1</set>
+            <set var="salida">1</set>
+            <condition var="contador">
+                <li><value><map name="por2"><date jformat="HH" /></map></value></li>
+                <li>
+                    <set var="contador"><map name="successor"><get var="contador"/></map>
+                    </set>
+                    <set var="listaeventos"><srai> remain <get var="listaeventos"/></srai></set>
+                    <loop/>
+                </li>
+            </condition>
+            <set var="item"><srai> ITERATE <get var="listaeventos"/></srai></set>
+            <set name="salida"> </set>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <condition var="item">
+                        <li value="0"></li>
+                        <li value="null"></li>
+                        <li value="unknown"></li>
+                        <li>
+                            <set name="salida"><srai> QUITARESPACIOS <get var="item"/></srai></set>
+                        </li>
+                    </condition>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <loop/>
+                </li>
+            </condition>
+        </think>
+        El último evento es: <get name="salida"/>
+    </template>
+</category>
+
+
+<!-- Consulta próximo evento -->
+
+
+<category>
+    <pattern>^ proximo evento ^ del *</pattern>
+    <template>
+        <think>
+            <set var="listaeventos"><map name="evento"><star index="3"/></map></set>
+            <set var="item"><srai> ITERATE <get var="listaeventos"/></srai></set>
+            <set name="salida"> </set>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <condition var="item">
+                        <li value="0"></li>
+                        <li value="null"></li>
+                        <li value="unknown"></li>
+                        <li>
+                            <set name="salida"><srai> QUITARESPACIOS <get var="item"/></srai></set>
+                            <set var="item">$</set>
+                        </li>
+                    </condition>
+                    <loop/>
+                </li>
+            </condition>
+        </think>
+        El próximo evento es: <get name="salida"/>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ proximo evento ^ de maniana </pattern>
+    <template>
+        <think>
+            <srai>proximo evento del <srai>TOMORROW <date jformat="dd" /> <date jformat="MM" /> <date jformat="yyyy" /> </srai></srai>
+        </think>
+        El próximo evento es: <get name="salida"/>
+    </template>
+</category>
+
+
+<category>
+    <pattern>^ proximo evento ^ de hoy</pattern>
+    <template>
+        <think>
+            <set var="listaeventos"><map name="evento"><date jformat="dd/MM/yyyy" /></map></set>
+            <set var="contador">1</set>
+            <set var="salida">1</set>
+            <condition var="contador">
+                <li><value><map name="por2"><date jformat="HH" /></map></value></li>
+                <li>
+                    <set var="contador"><map name="successor"><get var="contador"/></map>
+                    </set>
+                    <set var="listaeventos"><srai> remain <get var="listaeventos"/></srai></set>
+                    <loop/>
+                </li>
+            </condition>
+            <set var="item"><srai> ITERATE <get var="listaeventos"/></srai></set>
+            <set name="salida"> </set>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <condition var="item">
+                        <li value="0"></li>
+                        <li value="null"></li>
+                        <li value="unknown"></li>
+                        <li>
+                            <set name="salida"><srai> QUITARESPACIOS <get var="item"/></srai></set>
+                            <set var="item">$</set>
+                        </li>
+                    </condition>
+                    <loop/>
+                </li>
+            </condition>
+        </think>
+        El próximo evento es: <get name="salida"/>
+    </template>
+</category>
+
+
+<!-- Con quién me tengo que reunir -->
+
+<category>
+    <pattern> ^ quien+ ^ reun+ el (dia) *</pattern>
+    <template>
+        <think>
+            <set var="listaeventos"><map name="evento"><star index="3"/></map></set>
+            <set var="item"><srai> ITERATE <get var="listaeventos"/></srai></set>
+            <set var="horario"> </set>
+            <set var="cont">0</set>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <condition var="item">
+                        <li value="0"></li>
+                        <li value="null"></li>
+                        <li value="unknown"></li>
+                        <li>
+                            <set var="horario"><get var="horario"/> <map name="poshora"><get var="cont"/></map></set>
+                        </li>
+                    </condition>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <set var="cont"><map name="successor"><get var="cont"/></map></set>
+                    <loop/>
+                </li>
+            </condition>
+            <set var="item"><srai> ITERATE <get var="horario"/></srai></set>
+            <set name="salida"> </set>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <condition var="item">
+                        <li value="0"></li>
+                        <li>
+                            <set var="id"><star index="3"/>_<get var="item"/></set>
+                            <set name="salida"><get name="salida"/> <srai> remain <map name="evper"><get var="id"/></map></srai></set>
+                        </li>
+                    </condition>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <loop/>
+                </li>
+            </condition>
+        </think>
+        Me reuno con: <get name="salida"/>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ quien+ ^ reun+ maniana </pattern>
+    <template>
+        <think>
+            <srai>quien reuno el <srai>TOMORROW <date jformat="dd" /> <date jformat="MM" /> <date jformat="yyyy" /> </srai></srai>
+        </think>
+        Me reuno con: <get name="salida"/>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ quien+ ^ reun+ hoy </pattern>
+    <template>
+        <think>
+            <srai>quien reuno el <date jformat="dd/MM/yyyy" /></srai>
+        </think>
+        Me reuno con: <get name="salida"/>
+    </template>
+</category>
+
+
+<!-- Tengo hueco una determinada fecha -->
+
+<category>
+    <pattern> ^ hueco ^ el (dia) * </pattern>
+    <template>
+        <think>
+            <set name="fecha"><star index="3"/></set>
+            <set var="listaeventos">0<map name="evento"><get name="fecha"/></map></set>
+            <set var="item"><srai> ITERATE <get var="listaeventos"/></srai></set>
+            <set var="contador">0</set>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <condition var="item">
+                        <li value="0"></li>
+                        <li value="null">
+                            <set var="item">$</set>
+                        </li>
+                        <li value="unknown"></li>
+                        <li></li>
+                    </condition>
+                    <set var="contador"><map name="successor"><get var="contador"/></map></set>
+                    <loop/>
+                </li>
+            </condition>
+            <set name="salida"><map name="poshora"><get var="contador"/></map></set>
+        </think>
+        Tengo libre: <get name="salida"/>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ hueco ^ maniana </pattern>
+    <template>
+        <think>
+            <srai>hueco el <srai>TOMORROW <date jformat="dd" /> <date jformat="MM" /> <date jformat="yyyy" /> </srai></srai>
+        </think>
+        Tengo libre: <get name="salida"/>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ hueco ^ hoy </pattern>
+    <template>
+        <think>
+            <set var="listaeventos"><map name="evento"><date jformat="dd/MM/yyyy" /></map></set>
+            <set var="contador">0</set>
+            <condition var="contador">
+                <li><value><map name="por2"><date jformat="HH" /></map></value></li>
+                <li>
+                    <set var="contador"><map name="successor"><get var="contador"/></map>
+                    </set>
+                    <set var="listaeventos"><srai> remain <get var="listaeventos"/></srai></set>
+                    <loop/>
+                </li>
+            </condition>
+            <set var="item"><srai> ITERATE <get var="listaeventos"/></srai></set>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <condition var="item">
+                        <li value="0"></li>
+                        <li value="null">
+                            <set var="item">$</set>
+                        </li>
+                        <li value="unknown"></li>
+                        <li></li>
+                    </condition>
+                    <set var="contador"><map name="successor"><get var="contador"/></map></set>
+                    <loop/>
+                </li>
+            </condition>
+            <set name="salida"><map name="poshora"><get var="contador"/></map></set>
+        </think>
+        Tengo libre: <get name="salida"/>
+    </template>
+</category>
+
+
+<!-- Cuando tengo un evento con un determinado contacto -->
+
+<category>
+    <pattern> Cuando ^ evento con * </pattern>
+    <template>
+        <think>
+            <set var="ape"><srai> PONERBARRABAJA <star index="2"/> </srai></set>
+            <set var="claves"><readkeys>evper</readkeys></set>
+            <set var="item"><srai> ITERATE <get var="claves"/> </srai></set>
+            <set var="listaapellidos"><map name="evper"><get var="item"/></map></set>
+            <set var="esta"><srai> finditem <get var="ape"/> in <get var="listaapellidos"/></srai></set>
+            <condition var="esta">
+                <li value="0"></li>
+                <li>
+                    <set var="id"><get var="item"/></set>
+                    <set var="item">$</set>
+                </li>
+            </condition>
+            <condition var="item">
+                <li value="$"></li>
+                <li>
+                    <set var="item"><srai>NEXT</srai></set>
+                    <set var="listaapellidos"><map name="evper"><get var="item"/></map></set>
+                    <set var="esta"><srai> finditem <get var="ape"/> in <get var="listaapellidos"/></srai></set>
+                    <condition var="esta">
+                        <li value="0"></li>
+                        <li>
+                            <set var="id"><get var="item"/></set>
+                            <set var="item">$</set>
+                        </li>
+                    </condition>
+                    <loop/>
+                </li>
+            </condition>
+        </think>
+        <get var="id"/>
+    </template>
+</category>
+
+
+
+</aiml>

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+
+
+<!-- Añadir contacto -->
+
+<category>
+    <pattern> ^ [agregar+ añadir+ guardar+] ^ contacto ^ </pattern>
+    <template>
+        Dime su apellido.
+    </template>
+</category>
+
+
+<category>
+    <pattern>*</pattern>
+    <that>DIME SU APELLIDO</that>
+    <template>
+        <think>
+            <set var="ape"><star/></set>
+            <set name="apellido"><srai> PONERBARRABAJA <get var="ape"/></srai></set>
+            <set var="claves"> 0 <readkeys>nombre</readkeys></set>
+            <set var="contiene"><srai> FINDITEM <get name="apellido"/> IN <get var="claves"/></srai></set>
+        </think>
+                <condition var="contiene">
+                    <li value="0"> Dime su nombre. </li>
+                    <li> Este nombre ya se encuentra en mi base de datos, no es posible agregarlo. </li>
+                </condition>
+    </template>
+</category>
+
+
+<category>
+    <pattern>*</pattern>
+    <that>DIME SU NOMBRE</that>
+    <template>
+        <think>
+            <set var="nom"><star/></set>
+            <set var="tmp"><srai> PONERBARRABAJA <get var="nom"/></srai></set>
+            <addtomap><name>nombre</name><key><get name="apellido"/></key>
+            <value><get var="tmp"/></value></addtomap>
+        </think>
+        Dime su direccion.
+    </template>
+</category>
+
+
+<category>
+    <pattern>*</pattern>
+    <that>DIME SU DIRECCION</that>
+    <template>
+        <think>
+            <set var="dir"><star/></set>
+            <set var="tmp"><srai> PONERBARRABAJA <get var="dir"/></srai></set>
+            <addtomap><name>direccion</name><key><get name="apellido"/></key>
+            <value><get var="tmp"/></value></addtomap>
+        </think>
+        Dime su telefono.
+    </template>
+</category>
+
+
+<category>
+    <pattern>*</pattern>
+    <that>DIME SU TELEFONO</that>
+    <template>
+        <think>
+            <addtomap><name>telefono</name><key><get name="apellido"/></key>
+            <value><star/></value></addtomap>
+        </think>
+        Ok. Contacto guardado en mi base de datos.
+    </template>
+</category>
+
+
+<!-- Cantidad de contactos almacenados -->
+
+<category>
+    <pattern> ^ [cantidad cuantos] ^ contactos ^ </pattern>
+    <template>
+        <think>
+            <set var="claves"><readkeys>nombre</readkeys></set>
+            <set var="cantidad"><srai> COUNT <get var="claves"/></srai></set>
+        </think>
+        Tienes <get var="cantidad"/> contacto/s en tu agenda.
+    </template>
+</category>
+
+
+<!-- Listar los contactos almacenados -->
+
+<category>
+    <pattern> ^ lista+ ^ contactos ^ </pattern>
+    <template>
+        <think>
+            <set var="claves"><readkeys>nombre</readkeys></set>
+            <set var="item"><srai> ITERATE <get var="claves"/></srai></set>
+            <set var="salida"><srai> QUITARESPACIOS <get var="item"/></srai></set>
+        </think>
+            Lista de contactos: <condition var="item">
+                <li value="$"></li>
+                <li><get var="salida"/><think>
+                <set var="item"><srai>NEXT</srai></set>
+                <set var="salida">, <srai> QUITARESPACIOS <get var="item"/></srai></set>
+                </think><loop/></li>
+            </condition>
+    </template>
+</category>
+
+
+<!-- Borrar un contacto -->
+
+<category>
+    <pattern> ^ [eliminar+ borrar+] ^ contacto ^ </pattern>
+    <template> Dime el apellido del contacto que quieres borrar. </template>
+</category>
+
+<category>
+    <pattern>*</pattern>
+    <that> DIME EL APELLIDO DEL CONTACTO QUE QUIERES BORRAR </that>
+    <template>
+        <think>
+            <set name="apellido"><srai> PONERBARRABAJA <star/></srai></set>
+        </think>
+        Estas seguro de que quieres borrar este contacto?
+    </template>
+</category>
+
+<category>
+    <pattern>si</pattern>
+    <that> ESTAS SEGURO DE QUE QUIERES BORRAR ESTE CONTACTO </that>
+    <template>
+        <think>
+            <set var="claves"> 0 <readkeys>nombre</readkeys></set>
+            <set var="contiene"><srai> FINDITEM <get name="apellido"/> IN <get var="claves"/></srai></set>
+        </think>
+        <condition var="contiene">
+            <li value="0"> No existe el contacto en mi base de datos. </li>
+            <li>
+                <think>
+                <removefrommap><name>nombre</name><key><get name="apellido"/></key></removefrommap>
+                <removefrommap><name>direccion</name><key><get name="apellido"/></key></removefrommap>
+                <removefrommap><name>telefono</name><key><get name="apellido"/></key></removefrommap>
+                </think>
+                Contacto borrado.
+            </li>
+        </condition>
+    </template>
+</category>
+
+
+<category>
+    <pattern>no</pattern>
+    <that> ESTAS SEGURO DE QUE QUIERES BORRAR ESTE CONTACTO </that>
+    <template>
+        Entendido.
+    </template>
+</category>
+
+<!-- Modificar un contacto -->
+
+<category>
+    <pattern> ^ [modific+ edit+] ^ contacto ^ </pattern>
+    <template> Cual es el apellido? </template>
+</category>
+
+
+<category>
+    <pattern> * </pattern>
+    <that> CUAL ES EL APELLIDO </that>
+    <template>
+        <think>
+            <set name="apellido"><srai> PONERBARRABAJA <star/></srai></set>
+            <set var="claves"> 0 <readkeys>nombre</readkeys></set>
+                <set var="contiene"><srai> FINDITEM <get name="apellido"/> IN <get var="claves"/></srai></set>
+        </think>
+        <condition var="contiene">
+            <li value="0"> No existe el contacto en mi base de datos. </li>
+            <li> Quieres modificar su teléfono o su dirección? </li>
+        </condition>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ telefono ^ </pattern>
+    <that> QUIERES MODIFICAR SU TELÉFONO O SU DIRECCIÓN </that>
+    <template> Dime el nuevo teléfono. </template>
+</category>
+
+
+<category>
+    <pattern> * </pattern>
+    <that> DIME EL NUEVO TELÉFONO </that>
+    <template>
+        <modifymap>
+            <name>telefono</name><key><get name="apellido"/></key><value><star/></value>
+        </modifymap>
+        Ok. Teléfono modificado.
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ direccion ^ </pattern>
+    <that> QUIERES MODIFICAR SU TELÉFONO O SU DIRECCIÓN </that>
+    <template> Dime la nueva dirección. </template>
+</category>
+
+<category>
+    <pattern> * </pattern>
+    <that> DIME LA NUEVA DIRECCIÓN </that>
+    <template>
+        <modifymap>
+            <name>direccion</name><key><get name="apellido"/></key>
+            <value><srai> PONERBARRABAJA <star/></srai></value>
+        </modifymap>
+        Ok. Dirección modificada.
+    </template>
+</category>
+
+
+<!-- Búsqueda de nombre, dirección o teléfono -->
+
+<category>
+    <pattern> ^ nombre ^ de * </pattern>
+    <template>
+        <think>
+            <set var="ape"><srai> PONERBARRABAJA <star index="3"/></srai></set>
+            <set var="claves"> 0 <readkeys>nombre</readkeys></set>
+            <set var="contiene"><srai> FINDITEM <get var="ape"/> IN <get var="claves"/></srai></set>
+        </think>
+        <condition var="contiene">
+            <li value="0"> No existe el contacto en mi base de datos. </li>
+            <li>
+                Su nombre es <srai> QUITARESPACIOS <map name="nombre"><get var="ape"/></map></srai>.
+            </li>
+        </condition>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ telefono ^ de * </pattern>
+    <template>
+        <think>
+            <set var="ape"><srai> PONERBARRABAJA <star index="3"/></srai></set>
+            <set var="claves"> 0 <readkeys>nombre</readkeys></set>
+            <set var="contiene"><srai> FINDITEM <get var="ape"/> IN <get var="claves"/></srai></set>
+        </think>
+        <condition var="contiene">
+            <li value="0"> No existe el contacto en mi base de datos. </li>
+            <li>
+                Su teléfono es <srai> QUITARESPACIOS <map name="telefono"><get var="ape"/></map></srai>.
+            </li>
+        </condition>
+    </template>
+</category>
+
+
+<category>
+    <pattern> ^ direccion ^ de * </pattern>
+    <template>
+        <think>
+            <set var="ape"><srai> PONERBARRABAJA <star index="3"/></srai></set>
+            <set var="claves"> 0 <readkeys>nombre</readkeys></set>
+            <set var="contiene"><srai> FINDITEM <get var="ape"/> IN <get var="claves"/></srai></set>
+        </think>
+        <condition var="contiene">
+            <li value="0"> No existe el contacto en mi base de datos. </li>
+            <li>
+                Su dirección es <srai> QUITARESPACIOS <map name="direccion"><get var="ape"/></map></srai>.
+            </li>
+        </condition>
+    </template>
+</category>
+
+
+
+
+</aiml>

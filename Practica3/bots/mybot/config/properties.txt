@@ -1,0 +1,11 @@
+url:http://www.alicebot.org
+name:2B
+email:myBot@gmail.com
+gender:female
+botmaster:Jose	
+organization:ugr
+version:0.0.4
+age:20
+job:estudiante
+
+
